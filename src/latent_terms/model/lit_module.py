@@ -46,7 +46,7 @@ class LatentTermsLitModule(L.LightningModule):
     frozen and never appears in ``configure_optimizers``.
     """
 
-    def __init__(self, cfg: dict) -> None:
+    def __init__(self, cfg: dict[str, Any]) -> None:
         super().__init__()
         self.save_hyperparameters(cfg)
         # Embedder weights are stripped from checkpoints (see on_save_checkpoint); loading
@@ -56,11 +56,11 @@ class LatentTermsLitModule(L.LightningModule):
         self.sae: SAELayer = build_sae(cfg["model"]["sae"])
         self.embedder = build_embedder(cfg["model"]["backbone"]) if "backbone" in cfg["model"] else None
         self.loss_fn = build_loss(cfg["loss"])
-        self.optim_cfg: dict = cfg["optimizer"]
-        self.lr_scheduler_cfg: dict = cfg["lr_scheduler"]
+        self.optim_cfg: dict[str, Any] = cfg["optimizer"]
+        self.lr_scheduler_cfg: dict[str, Any] = cfg["lr_scheduler"]
         self.tokens_seen: int = 0
 
-    def on_save_checkpoint(self, checkpoint: dict) -> None:
+    def on_save_checkpoint(self, checkpoint: dict[str, Any]) -> None:
         # Save only the SAE
         state_dict = checkpoint["state_dict"]
         checkpoint["state_dict"] = {

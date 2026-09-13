@@ -6,7 +6,7 @@ every other pluggable component in this repo (see registry.py).
 
 from __future__ import annotations
 
-from typing import Mapping
+from typing import Any, Mapping
 
 import lightning as L
 
@@ -37,9 +37,9 @@ _COLLATOR_REGISTRY: dict[str, type] = {
 }
 
 
-def build_datamodule(cfg: Mapping, collator, seed: int) -> L.LightningDataModule:
+def build_datamodule(cfg: Mapping[str, Any], collator, seed: int) -> L.LightningDataModule:
     return build_from_registry(_DATAMODULE_REGISTRY, cfg, collator, seed, label="datamodule")
 
 
-def build_collator(cfg: Mapping):
+def build_collator(cfg: Mapping[str, Any]):
     return build_from_registry(_COLLATOR_REGISTRY, cfg, label="collator")

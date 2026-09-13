@@ -9,8 +9,8 @@ LightningDataModule.
 from __future__ import annotations
 
 
-def loader_kwargs(num_workers: int, prefetch_factor: int, pin_memory: bool) -> dict:
-    kwargs: dict = {"num_workers": num_workers, "pin_memory": pin_memory}
+def loader_kwargs(num_workers: int, prefetch_factor: int, pin_memory: bool) -> dict[str, int | bool]:
+    kwargs: dict[str, int | bool] = {"num_workers": num_workers, "pin_memory": pin_memory}
     if num_workers > 0:
         kwargs["prefetch_factor"] = prefetch_factor
         kwargs["persistent_workers"] = True

@@ -25,7 +25,7 @@ from .indexer import BaseIndex, build_index
 from .metrics import build_ranked_results, compute_metrics
 
 
-def _load_jsonl(path: str) -> list[dict]:
+def _load_jsonl(path: str) -> list[dict[str, str]]:
     with open(path) as f:
         return [json.loads(line) for line in f if line.strip()]
 
@@ -70,7 +70,7 @@ class LatentTermsEvaluator:
         self.batch_size = batch_size
         self.index_cfg = dict(index_cfg)
 
-        def _get_text(record: dict) -> str:
+        def _get_text(record: dict[str, str]) -> str:
             if text_field == "title_text":
                 return (record.get("title", "") + " " + record["text"]).strip()
             return record[text_field]

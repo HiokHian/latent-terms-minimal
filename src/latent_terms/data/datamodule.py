@@ -11,6 +11,8 @@ a crash resumes on the exact batch it was about to consume.
 
 from __future__ import annotations
 
+from typing import Any
+
 import lightning as L
 import numpy as np
 import torch
@@ -48,7 +50,7 @@ class LitDataModule(L.LightningDataModule):
         self.train_ds: Dataset | None = None
         self.val_ds: Dataset | None = None
         self._train_loader: StatefulDataLoader | None = None
-        self._pending_train_loader_state: dict | None = None
+        self._pending_train_loader_state: dict[str, Any] | None = None
 
     def setup(self, stage: str | None = None) -> None:
         cfg = self.data_cfg
@@ -95,12 +97,12 @@ class LitDataModule(L.LightningDataModule):
             ),
         )
 
-    def state_dict(self) -> dict:
+    def state_dict(self) -> dict[str, Any]:
         if self._train_loader is None:
             return {}
         return {"train_loader": self._train_loader.state_dict()}
 
-    def load_state_dict(self, state_dict: dict) -> None:
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         pending = state_dict.get("train_loader")
         if pending is None:
             return

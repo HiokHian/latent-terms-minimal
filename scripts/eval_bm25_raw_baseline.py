@@ -30,6 +30,7 @@ import json
 import re
 from collections import Counter
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import scipy.sparse as sp
@@ -102,7 +103,7 @@ def main() -> None:
         shape=(n_docs, n_terms), dtype=np.float32,
     )
 
-    query_records: list[dict] = []
+    query_records: list[dict[str, Any]] = []
     with open(args.queries) as f:
         for line in f:
             if line.strip():

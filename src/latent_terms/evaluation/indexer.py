@@ -199,7 +199,7 @@ class FlatIndex(BaseIndex):
         return self._index.search(queries, top_k)
 
 
-_INDEX_REGISTRY: dict = {
+_INDEX_REGISTRY: dict[str, type[BaseIndex]] = {
     "bm25": BM25Index,
     "flat": FlatIndex,
 }

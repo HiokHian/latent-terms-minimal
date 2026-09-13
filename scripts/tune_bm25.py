@@ -89,8 +89,8 @@ def main() -> None:
         args.transform, args.batch_size, args.max_length, device,
     )
 
-    grid_results: list[dict] = []
-    best: dict | None = None
+    grid_results: list[dict[str, float]] = []
+    best: dict[str, float] | None = None
     for k1 in K1_GRID:
         for b in B_GRID:
             index.k1 = k1
