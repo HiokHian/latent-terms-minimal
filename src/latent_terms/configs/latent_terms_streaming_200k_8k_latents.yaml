@@ -1,0 +1,67 @@
+seed: 42
+
+# Ablation: n_latents 32768 -> 8192 (topk unchanged at 16), all else identical to
+# latent_terms_streaming_200k.yaml, to isolate the effect of dictionary size on retrieval.
+
+model:
+  sae:
+    name: top_k
+    hidden_dim: 768
+    n_latents: 8192
+    topk: 16
+
+  backbone:
+    name: hf_backbone
+    pretrained_model_name: nthakur/contriever-base-msmarco
+
+loss:
+  name: latent_terms
+  l1_coef: 0.0
+
+data:
+  name: streaming_fineweb
+  repo_id: HuggingFaceFW/fineweb-edu
+  subset: sample/10BT
+  num_shards: 8                    # one shard per worker (see num_workers)
+  max_row_groups_per_shard: 30     # per_worker_cap = max_docs/num_workers = 200000/8 = 25000 docs
+                                    # = 25 row groups/worker; 30 gives 5 row groups of headroom.
+                                    # Shard 000 alone has 726 row groups, so this is well within
+                                    # any single shard's budget.
+  max_docs: 200000                 # 100x the 2k run
+  batch_size: 16                   # unchanged — see 2k/20k configs
+  num_workers: 8
+  prefetch_factor: 2
+  pin_memory: true
+  collator:
+    name: streaming_text
+    tokenizer_name: nthakur/contriever-base-msmarco
+    max_length: 256
+
+optimizer:
+  name: adamw
+  lr: 1.0e-3
+  weight_decay: 0.0
+  eps: 1.0e-8
+
+lr_scheduler:
+  name: cosine_with_warmup
+  warmup_steps: 625         # ~5% of total_steps
+  total_steps: 12500        # == max_docs (200000) / batch_size (16)
+  min_lr_ratio: 0.0
+
+logger:
+  name: csv
+  save_dir: outputs/
+  run_name: latent_terms_streaming_200k_8k_latents
+
+trainer:
+  accelerator: auto
+  precision: bf16-mixed
+  max_steps: 12500         # == lr_scheduler.total_steps
+  gradient_clip_val: 1.0
+
+checkpoint:
+  dirpath: outputs/checkpoints/streaming_200k_8k_latents
+  filename: "epoch={epoch:02d}"
+  save_top_k: -1
+  every_n_epochs: 1
